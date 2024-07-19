@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { 
   Box, Button, Input, FormControl, FormLabel, VStack, Text, Heading, 
-  useColorModeValue, useToast, Link
+  useColorModeValue, useToast, Link as ChakraLink
 } from "@chakra-ui/react";
 import axios from "axios";
 import NextLink from 'next/link';
@@ -69,9 +69,9 @@ const ForgotPasswordForm = () => {
           </form>
           <Text>
             Remember your password?{" "}
-            <NextLink href="/login" passHref>
-              <Link color="blue.500">Login here</Link>
-            </NextLink>
+            <NextLink href="/login" passHref legacyBehavior>
+            <ChakraLink color="blue.500">Login here</ChakraLink>
+          </NextLink>
           </Text>
         </VStack>
       </Box>

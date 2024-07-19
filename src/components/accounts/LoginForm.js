@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { 
   Box, Button, Input, FormControl, FormLabel, VStack, Text, Heading, 
-  useColorModeValue, useToast, Checkbox, Flex, Link
+  useColorModeValue, useToast, Checkbox, Flex, Link as ChakraLink
 } from "@chakra-ui/react";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/router";
@@ -80,9 +80,9 @@ const LoginForm = () => {
                 >
                   Remember me
                 </Checkbox>
-                <NextLink href="/forgot-password" passHref>
-                  <Link color="blue.500">Forgot password?</Link>
-                </NextLink>
+                <NextLink href="/forgot-password" passHref legacyBehavior>
+            <ChakraLink color="blue.500">Forgot password?</ChakraLink>
+          </NextLink>
               </Flex>
               <Button type="submit" colorScheme="blue" width="full">
                 Login
@@ -91,9 +91,9 @@ const LoginForm = () => {
           </form>
           <Text>
             Don't have an account?{" "}
-            <NextLink href="/register" passHref>
-              <Link color="blue.500">Register here</Link>
-            </NextLink>
+            <NextLink href="/register" passHref legacyBehavior>
+            <ChakraLink color="blue.500">Register here</ChakraLink>
+          </NextLink>
           </Text>
         </VStack>
       </Box>

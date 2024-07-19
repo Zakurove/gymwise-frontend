@@ -112,8 +112,8 @@ const ResetPassword = () => {
           <Text mt={4}>
             Remember your password?{" "}
             <NextLink href="/login" passHref legacyBehavior>
-              <ChakraLink color="blue.500">Login here</ChakraLink>
-            </NextLink>
+            <ChakraLink color="blue.500">Login here</ChakraLink>
+          </NextLink>
           </Text>
         </VStack>
       </Box>

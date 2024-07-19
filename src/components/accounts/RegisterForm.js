@@ -11,7 +11,7 @@ import {
   Heading, 
   useColorModeValue, 
   useToast, 
-  Link
+  Link as ChakraLink
 } from "@chakra-ui/react";
 import axios from "axios";
 import NextLink from 'next/link';
@@ -119,9 +119,9 @@ const RegisterForm = () => {
           </form>
           <Text>
             Already have an account?{" "}
-            <NextLink href="/login" passHref>
-              <Link color="blue.500">Login here</Link>
-            </NextLink>
+            <NextLink href="/login" passHref legacyBehavior>
+            <ChakraLink color="blue.500">Login here</ChakraLink>
+          </NextLink>
           </Text>
         </VStack>
       </Box>
