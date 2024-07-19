@@ -6,9 +6,19 @@
     "start": "next start"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
+    "@chakra-ui/next-js": "^2.2.0",
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "axios": "^1.7.2",
+    "framer-motion": "^11.3.0",
+    "jwt-decode": "^4.0.0",
     "next": "latest",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.52.1",
+    "react-icons": "^5.2.1"
   },
   "engines": {
     "node": ">=18"
