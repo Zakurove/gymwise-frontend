@@ -13,10 +13,11 @@ import {
   Icon,
   Text,
   Flex,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useAuth } from "../../context/AuthContext";
-import { FaHome, FaChartLine, FaUsers, FaCog } from "react-icons/fa";
+import { FaHome, FaChartLine, FaUsers, FaCog, FaBullhorn, FaFileAlt } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const router = useRouter();
@@ -24,47 +25,66 @@ const Sidebar = ({ isOpen, onClose }) => {
   const bg = useColorModeValue('white', 'gray.800');
   const color = useColorModeValue('gray.800', 'white');
   const hoverBg = useColorModeValue('gray.100', 'gray.700');
+  
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
-  const NavLink = ({ icon, children, href }) => (
-    <Link
-      href={href}
-      style={{ textDecoration: 'none' }}
-      _focus={{ boxShadow: 'none' }}
-    >
-      <Flex
-        align="center"
-        p="4"
-        mx="4"
-        borderRadius="lg"
-        role="group"
-        cursor="pointer"
-        _hover={{
-          bg: hoverBg,
-          color: 'brand.500',
-        }}
-        onClick={() => { router.push(href); onClose(); }}
+  const NavLink = ({ icon, children, href }) => {
+    const isActive = router.pathname === href;
+
+    const handleClick = (e) => {
+      e.preventDefault();
+      if (!isActive) {
+        router.push(href);
+      }
+      if (isMobile) {
+        onClose();
+      }
+    };
+
+    return (
+      <Link
+        href={href}
+        style={{ textDecoration: 'none' }}
+        _focus={{ boxShadow: 'none' }}
+        onClick={handleClick}
       >
-        {icon && (
-          <Icon
-            mr="4"
-            fontSize="16"
-            _groupHover={{
-              color: 'brand.500',
-            }}
-            as={icon}
-          />
-        )}
-        {children}
-      </Flex>
-    </Link>
-  );
+        <Flex
+          align="center"
+          p="4"
+          mx="4"
+          borderRadius="lg"
+          role="group"
+          cursor="pointer"
+          bg={isActive ? hoverBg : 'transparent'}
+          color={isActive ? 'brand.500' : color}
+          _hover={{
+            bg: hoverBg,
+            color: 'brand.500',
+          }}
+        >
+          {icon && (
+            <Icon
+              mr="4"
+              fontSize="16"
+              _groupHover={{
+                color: 'brand.500',
+              }}
+              as={icon}
+            />
+          )}
+          {children}
+        </Flex>
+      </Link>
+    );
+  };
 
   const SidebarContent = (
     <VStack align="stretch" spacing={1}>
-      <NavLink icon={FaHome} href="/dashboard">Dashboard</NavLink>
-      <NavLink icon={FaChartLine} href="/analytics">Analytics</NavLink>
-      <NavLink icon={FaUsers} href="/members">Members</NavLink>
-      {(user.role === 'superadmin' || user.role === 'admin') && (
+      <NavLink icon={FaHome} href="/dashboard">Dashboard & Revenue</NavLink>
+      <NavLink icon={FaUsers} href="/member-insights">Member Insights & Retention</NavLink>
+      <NavLink icon={FaBullhorn} href="/engagement">Engagement Orchestrator</NavLink>
+      <NavLink icon={FaFileAlt} href="/reports">Reports & Analytics</NavLink>
+      {(user?.role === 'superadmin' || user?.role === 'admin') && (
         <NavLink icon={FaCog} href="/admin/panel">Admin Panel</NavLink>
       )}
     </VStack>
@@ -91,19 +111,21 @@ const Sidebar = ({ isOpen, onClose }) => {
       </Box>
 
       {/* Mobile sidebar */}
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-        <DrawerOverlay>
-          <DrawerContent bg={bg} color={color}>
-            <DrawerCloseButton />
-            <DrawerHeader borderBottomWidth="1px">
-              <Text fontSize="2xl" fontWeight="bold" color="brand.500">GymWise</Text>
-            </DrawerHeader>
-            <DrawerBody>
-              {SidebarContent}
-            </DrawerBody>
-          </DrawerContent>
-        </DrawerOverlay>
-      </Drawer>
+      {isMobile && (
+        <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+          <DrawerOverlay>
+            <DrawerContent bg={bg} color={color}>
+              <DrawerCloseButton />
+              <DrawerHeader borderBottomWidth="1px">
+                <Text fontSize="2xl" fontWeight="bold" color="brand.500">GymWise</Text>
+              </DrawerHeader>
+              <DrawerBody>
+                {SidebarContent}
+              </DrawerBody>
+            </DrawerContent>
+          </DrawerOverlay>
+        </Drawer>
+      )}
     </>
   );
 };

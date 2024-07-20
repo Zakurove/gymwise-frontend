@@ -75,7 +75,6 @@ const AdminPanel = () => {
           <Tr>
             <Th>Name</Th>
             <Th>Email</Th>
-            <Th>Institution</Th>
             <Th>Action</Th>
           </Tr>
         </Thead>
@@ -84,7 +83,6 @@ const AdminPanel = () => {
             <Tr key={pendingUser.id}>
               <Td>{`${pendingUser.first_name} ${pendingUser.last_name}`}</Td>
               <Td>{pendingUser.email}</Td>
-              <Td>{pendingUser.institution}</Td>
               <Td>
                 <Button
                   colorScheme="green"
