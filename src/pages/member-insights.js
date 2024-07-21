@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Heading, SimpleGrid, Text, useColorModeValue } from '@chakra-ui/react';
+import { Box, Heading, SimpleGrid, Text, useColorModeValue, VStack } from '@chakra-ui/react';
 import MemberDistributionChart from '../components/memberInsights/MemberDistributionChart';
 import RetentionAlerts from '../components/memberInsights/RetentionAlerts';
 import MemberSegmentBreakdown from '../components/memberInsights/MemberSegmentBreakdown';
@@ -9,15 +9,21 @@ const MemberInsights = () => {
 
   return (
     <Box maxW="container.xl" mx="auto" py={8} px={4} bg={bgColor}>
-      <Heading mb={2}>Member Insights</Heading>
-      <Text mb={6} color={useColorModeValue('gray.600', 'gray.400')}>Analyze member distribution and take action to improve retention.</Text>
-      
-      <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={8} mb={8}>
+      <VStack spacing={8} align="stretch">
+        <Box>
+          <Heading mb={2} size="2xl" color="brand.500">Member Insights</Heading>
+          <Text mb={6} color={useColorModeValue('gray.600', 'gray.400')} fontSize="lg">
+            Leverage our AI-powered analytics to understand and improve member retention.
+          </Text>
+        </Box>
+        
         <MemberDistributionChart />
-        <RetentionAlerts />
-      </SimpleGrid>
-      
-      <MemberSegmentBreakdown />
+        
+        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={8}>
+          <RetentionAlerts />
+          <MemberSegmentBreakdown />
+        </SimpleGrid>
+      </VStack>
     </Box>
   );
 };

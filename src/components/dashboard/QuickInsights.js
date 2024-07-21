@@ -12,12 +12,11 @@ const QuickInsights = () => {
     { icon: FiAlertCircle, text: "15 members at risk", subtext: "Haven't visited in the last 30 days", positive: false, color: "red.500", category: "Retention" },
     { icon: FiCheckCircle, text: "Retention rate improved by 5%", subtext: "This quarter", positive: true, color: "blue.500", category: "Retention" },
     { icon: FiUsers, text: "20% increase in class attendance", subtext: "Over the past week", positive: true, color: "purple.500", category: "Engagement" },
-    { icon: FiDollarSign, text: "Average spend per member up 8%", subtext: "Month-over-month", positive: true, color: "orange.500", category: "Revenue" },
   ];
 
   return (
     <Box bg={bgColor} p={6} borderRadius="lg" borderWidth={1} borderColor={borderColor} boxShadow="xl">
-      <Heading size="md" mb={6} >Quick Insights</Heading>
+      <Heading size="md" mb={6}>Quick Insights</Heading>
       <VStack align="stretch" spacing={4}>
         {insights.map((insight, index) => (
           <Box 

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Heading, Table, Thead, Tbody, Tr, Th, Td, Badge, Button, useColorModeValue } from '@chakra-ui/react';
-import { FiEye } from 'react-icons/fi';
+import { Box, Heading, Table, Thead, Tbody, Tr, Th, Td, Badge, Button, useColorModeValue, Text, Flex, Icon } from '@chakra-ui/react';
+import { FiEye, FiEdit2, FiPauseCircle, FiPlayCircle } from 'react-icons/fi';
 
 const ActiveCampaigns = () => {
   const bgColor = useColorModeValue('white', 'gray.700');
@@ -13,8 +13,11 @@ const ActiveCampaigns = () => {
   ];
 
   return (
-    <Box bg={bgColor} p={6} borderRadius="lg" borderWidth={1} borderColor={borderColor} boxShadow="xl">
-      <Heading size="md" mb={6}>Active Campaigns</Heading>
+    <Box bg={bgColor} p={6} borderRadius="xl" borderWidth={1} borderColor={borderColor} boxShadow="xl">
+      <Flex justifyContent="space-between" alignItems="center" mb={6}>
+        <Heading size="lg">Active Campaigns</Heading>
+        <Button colorScheme="brand" size="sm">View All</Button>
+      </Flex>
       <Box overflowX="auto">
         <Table variant="simple">
           <Thead>
@@ -24,7 +27,7 @@ const ActiveCampaigns = () => {
               <Th>Type</Th>
               <Th>Status</Th>
               <Th>Performance</Th>
-              <Th>Action</Th>
+              <Th>Actions</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -34,13 +37,19 @@ const ActiveCampaigns = () => {
                 <Td>{campaign.segment}</Td>
                 <Td>{campaign.type}</Td>
                 <Td>
-                  <Badge colorScheme={campaign.status === 'Active' ? 'green' : 'yellow'}>
+                  <Badge colorScheme={campaign.status === 'Active' ? 'green' : 'yellow'} borderRadius="full" px={2}>
                     {campaign.status}
                   </Badge>
                 </Td>
                 <Td>{campaign.performance}</Td>
                 <Td>
-                  <Button leftIcon={<FiEye />} size="sm" variant="outline">View</Button>
+                  <Flex gap={2}>
+                    <Button size="sm" variant="ghost" colorScheme="blue"><Icon as={FiEye} /></Button>
+                    <Button size="sm" variant="ghost" colorScheme="green"><Icon as={FiEdit2} /></Button>
+                    <Button size="sm" variant="ghost" colorScheme="red">
+                      <Icon as={campaign.status === 'Active' ? FiPauseCircle : FiPlayCircle} />
+                    </Button>
+                  </Flex>
                 </Td>
               </Tr>
             ))}
