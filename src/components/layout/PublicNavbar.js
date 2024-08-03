@@ -1,3 +1,5 @@
+// src/components/layout/PublicNavbar.js
+
 import React from "react";
 import {
   Box,

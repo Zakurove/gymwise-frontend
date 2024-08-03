@@ -1,23 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from 'react-redux';
 import { 
   Box, Button, Input, FormControl, FormLabel, VStack, Text, Heading, 
   useColorModeValue, useToast, Link as ChakraLink
 } from "@chakra-ui/react";
-import axios from "axios";
 import NextLink from 'next/link';
 import { motion } from "framer-motion";
+import { forgotPassword } from "../../redux/auth/authActions";
 
 const ForgotPasswordForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector(state => state.auth);
   const toast = useToast();
   const bgColor = useColorModeValue("white", "gray.800");
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
     try {
-      await axios.post("http://localhost:8000/api/forgot-password/", data);
+      await dispatch(forgotPassword(data.email));
       toast({
         title: "Reset link sent",
         description: "Please check your email for the password reset link.",
@@ -28,13 +29,11 @@ const ForgotPasswordForm = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "An error occurred. Please try again.",
+        description: error.message || "An error occurred. Please try again.",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -62,16 +61,17 @@ const ForgotPasswordForm = () => {
                 />
                 {errors.email && <Text color="red.500">{errors.email.message}</Text>}
               </FormControl>
-              <Button type="submit" colorScheme="blue" width="full" isLoading={isLoading}>
+              <Button type="submit" colorScheme="blue" width="full" isLoading={loading}>
                 Send Reset Link
               </Button>
             </VStack>
           </form>
+          {error && <Text color="red.500">{error}</Text>}
           <Text>
             Remember your password?{" "}
             <NextLink href="/login" passHref legacyBehavior>
-            <ChakraLink color="blue.500">Login here</ChakraLink>
-          </NextLink>
+              <ChakraLink color="blue.500">Login here</ChakraLink>
+            </NextLink>
           </Text>
         </VStack>
       </Box>

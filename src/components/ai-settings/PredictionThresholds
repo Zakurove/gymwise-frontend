@@ -1,0 +1,40 @@
+// src/components/ai-settings/PredictionThresholds.js
+
+import React from 'react';
+import { Box, Heading, VStack, FormControl, FormLabel, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Text, Button, useColorModeValue } from '@chakra-ui/react';
+
+const PredictionThresholds = () => {
+  const bgColor = useColorModeValue('white', 'gray.700');
+  const borderColor = useColorModeValue('gray.200', 'gray.600');
+
+  return (
+    <Box bg={bgColor} p={8} borderRadius="xl" borderWidth={1} borderColor={borderColor} boxShadow="xl">
+      <Heading size="lg" mb={6}>Prediction Thresholds</Heading>
+      <VStack spacing={6} align="stretch">
+        <FormControl>
+          <FormLabel>Churn Risk Threshold</FormLabel>
+          <Slider defaultValue={70} min={0} max={100} step={1}>
+            <SliderTrack>
+              <SliderFilledTrack />
+            </SliderTrack>
+            <SliderThumb boxSize={6} />
+          </Slider>
+          <Text mt={2}>Members with a churn probability above this threshold will be flagged as high risk.</Text>
+        </FormControl>
+        <FormControl>
+          <FormLabel>Engagement Score Threshold</FormLabel>
+          <Slider defaultValue={50} min={0} max={100} step={1}>
+            <SliderTrack>
+              <SliderFilledTrack />
+            </SliderTrack>
+            <SliderThumb boxSize={6} />
+          </Slider>
+          <Text mt={2}>Members with an engagement score below this threshold will be considered disengaged.</Text>
+        </FormControl>
+        <Button colorScheme="brand">Save Thresholds</Button>
+      </VStack>
+    </Box>
+  );
+};
+
+export default PredictionThresholds;

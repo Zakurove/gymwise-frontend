@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from 'react-redux';
 import { 
   Box, Button, Input, FormControl, FormLabel, VStack, Text, Heading, 
-  useColorModeValue, useToast, Checkbox, Flex, Link as ChakraLink
+  useColorModeValue, useToast, Checkbox, Flex, Link as ChakraLink,
+  Spinner
 } from "@chakra-ui/react";
-import { useAuth } from "../../context/AuthContext";
+import { login } from "../../redux/auth/authActions";
 import { useRouter } from "next/router";
 import NextLink from 'next/link';
 import { motion } from "framer-motion";
 
 const LoginForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const { login } = useAuth();
+  const dispatch = useDispatch();
+  const { loggingIn, error } = useSelector(state => state.auth);  // Change loading to loggingIn
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
   const bgColor = useColorModeValue("white", "gray.800");
@@ -19,18 +22,12 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      await login(data.email, data.password, rememberMe);
-      router.push("/dashboard");
-      toast({
-        title: "Login successful",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      await dispatch(login(data.email, data.password, rememberMe));
+      router.push('/dashboard');  // Remove the setTimeout
     } catch (error) {
       toast({
         title: "Login failed",
-        description: error.response?.data?.detail || "Please try again.",
+        description: error.message || "Please try again.",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -81,19 +78,27 @@ const LoginForm = () => {
                   Remember me
                 </Checkbox>
                 <NextLink href="/forgot-password" passHref legacyBehavior>
-            <ChakraLink color="blue.500">Forgot password?</ChakraLink>
-          </NextLink>
+                  <ChakraLink color="blue.500">Forgot password?</ChakraLink>
+                </NextLink>
               </Flex>
-              <Button type="submit" colorScheme="blue" width="full">
+              <Button 
+                type="submit" 
+                colorScheme="blue" 
+                width="full" 
+                isLoading={loggingIn}
+                loadingText="Logging in"
+                spinner={<Spinner color="white" />}
+              >
                 Login
               </Button>
             </VStack>
           </form>
+          {error && <Text color="red.500">{error}</Text>}
           <Text>
             Don't have an account?{" "}
             <NextLink href="/register" passHref legacyBehavior>
-            <ChakraLink color="blue.500">Register here</ChakraLink>
-          </NextLink>
+              <ChakraLink color="blue.500">Register here</ChakraLink>
+            </NextLink>
           </Text>
         </VStack>
       </Box>

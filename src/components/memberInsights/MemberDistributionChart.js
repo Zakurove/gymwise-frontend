@@ -1,3 +1,5 @@
+// src/components/memberInsights/MemberDistributionChart.js
+
 import React, { useState } from 'react';
 import { Box, Heading, Text, Flex, Button, SimpleGrid, useColorModeValue, Icon, VStack, HStack, Badge } from '@chakra-ui/react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';

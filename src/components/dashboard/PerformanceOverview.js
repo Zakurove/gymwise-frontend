@@ -1,26 +1,36 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Box, Heading, Text, SimpleGrid, Flex, Icon, useColorModeValue } from '@chakra-ui/react';
 import { FiTrendingUp, FiUserCheck, FiDollarSign, FiAward } from 'react-icons/fi';
 
 const PerformanceOverview = () => {
+  const { performanceData, loading, error } = useSelector(state => state.performance);
   const bgColor = useColorModeValue('white', 'gray.700');
   const borderColor = useColorModeValue('gray.100', 'gray.600');
   const textColor = useColorModeValue('gray.600', 'gray.200');
 
-  const performanceData = [
-    { label: 'Revenue Growth', value: '8.2%', color: 'green.500', icon: FiTrendingUp },
-    { label: 'Member Retention', value: '85%', color: 'blue.500', icon: FiUserCheck },
-    { label: 'Avg. Revenue/Member', value: '$208', color: 'purple.500', icon: FiDollarSign },
-    { label: 'Customer Satisfaction', value: '4.5/5', color: 'orange.500', icon: FiAward },
-  ];
+  if (loading) {
+    return <Text>Loading performance data...</Text>;
+  }
+
+  if (error) {
+    return <Text color="red.500">Error loading performance data: {error}</Text>;
+  }
+
+  const icons = {
+    revenueGrowth: FiTrendingUp,
+    memberRetention: FiUserCheck,
+    avgRevenuePerMember: FiDollarSign,
+    customerSatisfaction: FiAward,
+  };
 
   return (
     <Box bg={bgColor} p={6} borderRadius="lg" borderWidth={1} borderColor={borderColor} boxShadow="xl">
       <Heading size="md" mb={6}>Performance Overview</Heading>
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-        {performanceData.map((item, index) => (
+        {Object.entries(performanceData).map(([key, item]) => (
           <Box 
-            key={index} 
+            key={key} 
             borderRadius="md" 
             overflow="hidden"
             position="relative"
@@ -40,7 +50,7 @@ const PerformanceOverview = () => {
                     {item.value}
                   </Text>
                 </Box>
-                <Icon as={item.icon} color={item.color} boxSize={8} />
+                <Icon as={icons[key]} color={item.color} boxSize={8} />
               </Flex>
             </Box>
             <Box 

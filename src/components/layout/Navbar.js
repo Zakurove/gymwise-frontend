@@ -40,9 +40,14 @@ const Navbar = () => {
     </Link>
   );
 
+  const handleLogout = async () => {
+    await logout();
+    // The redirection is now handled within the logout function in AuthContext
+  };
+
   const NavLinks = () => (
     <>
-      <NavLink href="/">Homee</NavLink>
+      <NavLink href="/">Home</NavLink>
       <NavLink href="/about-us">About Us</NavLink>
       <NavLink href="/contact-us">Contact Us</NavLink>
       <NavLink href="/book-demo">Book a Demo</NavLink>
@@ -54,7 +59,7 @@ const Navbar = () => {
             py={1}
             rounded={'md'}
             colorScheme="teal"
-            onClick={() => logout()}
+            onClick={handleLogout}
           >
             Logout
           </Button>

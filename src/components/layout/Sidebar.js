@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from 'react-redux';
 import {
   Box,
   VStack,
@@ -16,12 +17,11 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useAuth } from "../../context/AuthContext";
-import { FaHome, FaChartLine, FaUsers, FaCog, FaBullhorn, FaFileAlt } from "react-icons/fa";
+import { FaHome, FaChartLine, FaUsers, FaCog, FaBullhorn, FaFileAlt, FaDatabase } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useSelector(state => state.auth);
   const bg = useColorModeValue('white', 'gray.800');
   const color = useColorModeValue('gray.800', 'white');
   const hoverBg = useColorModeValue('gray.100', 'gray.700');
@@ -84,6 +84,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       <NavLink icon={FaUsers} href="/member-insights">Member Insights & Retention</NavLink>
       <NavLink icon={FaBullhorn} href="/engagement">Engagement Orchestrator</NavLink>
       <NavLink icon={FaFileAlt} href="/reports">Reports & Analytics</NavLink>
+      <NavLink icon={FaDatabase} href="/data-management">Data Management</NavLink>
       {(user?.role === 'superadmin' || user?.role === 'admin') && (
         <NavLink icon={FaCog} href="/admin/panel">Admin Panel</NavLink>
       )}

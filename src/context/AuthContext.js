@@ -1,40 +1,40 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../utils/axiosConfig";
 import { useToast } from "@chakra-ui/react";
+import { useRouter } from 'next/router';
+import { useDispatch } from 'react-redux';
+import { loginSuccess, logout } from '../redux/auth/authSlice';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const loadUser = async () => {
       const token = localStorage.getItem("token") || sessionStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get("http://localhost:8000/api/user/", {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          setUser(response.data);
+          const response = await axios.get('/api/user/');
+          dispatch(loginSuccess({ user: response.data, token }));
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         } catch (error) {
           console.error("Error loading user:", error);
-          localStorage.removeItem("token");
-          localStorage.removeItem("refreshToken");
-          sessionStorage.removeItem("token");
-          sessionStorage.removeItem("refreshToken");
+          await logoutUser();
         }
       }
       setLoading(false);
     };
 
     loadUser();
-  }, []);
+  }, [dispatch]);
 
   const login = async (email, password, rememberMe) => {
     try {
-      const response = await axios.post("http://localhost:8000/api/token/", { email, password });
+      const response = await axios.post('/api/token/', { email, password });
       const { access, refresh, user } = response.data;
       
       if (rememberMe) {
@@ -45,7 +45,11 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.setItem("refreshToken", refresh);
       }
       
-      setUser(user);
+      dispatch(loginSuccess({ user, token: access }));
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+  
+      router.push('/dashboard');
+  
       return user;
     } catch (error) {
       console.error("Login failed", error.response ? error.response.data : error.message);
@@ -53,25 +57,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logoutUser = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("refreshToken");
-    setUser(null);
-    toast({
-      title: "Logged out successfully",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+    dispatch(logout());
+    delete axios.defaults.headers.common['Authorization'];
+    router.push('/login');
   };
 
   const refreshToken = async () => {
     const refreshToken = localStorage.getItem("refreshToken") || sessionStorage.getItem("refreshToken");
     if (refreshToken) {
       try {
-        const response = await axios.post("http://localhost:8000/api/token/refresh/", {
+        const response = await axios.post('/api/token/refresh/', {
           refresh: refreshToken
         });
         const { access } = response.data;
@@ -80,10 +80,11 @@ export const AuthProvider = ({ children }) => {
         } else {
           sessionStorage.setItem("token", access);
         }
+        axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
         return access;
       } catch (error) {
         console.error("Error refreshing token:", error);
-        logout();
+        await logoutUser();
         throw error;
       }
     }
@@ -112,7 +113,14 @@ export const AuthProvider = ({ children }) => {
   );
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, refreshToken }}>
+    <AuthContext.Provider 
+      value={{ 
+        login, 
+        logoutUser, 
+        loading, 
+        refreshToken,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

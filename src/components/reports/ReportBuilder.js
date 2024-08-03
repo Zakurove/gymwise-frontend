@@ -1,3 +1,5 @@
+// src/components/reports/ReportBuilder.js
+
 import React from 'react';
 import { Box, Heading, VStack, FormControl, FormLabel, Select, Button, Icon, useColorModeValue, SimpleGrid, Checkbox, Text, Flex, Tooltip } from '@chakra-ui/react';
 import { FiFileText, FiCalendar, FiDownload, FiPieChart, FiBarChart2, FiTrendingUp, FiInfo } from 'react-icons/fi';

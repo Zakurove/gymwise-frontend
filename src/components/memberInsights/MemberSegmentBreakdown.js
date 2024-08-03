@@ -1,3 +1,5 @@
+// src/components/memberInsights/MemberSegmentBreakdown.js
+
 import React from 'react';
 import { Box, Heading, Table, Thead, Tbody, Tr, Th, Td, useColorModeValue, Flex, Text, Progress, Icon } from '@chakra-ui/react';
 import { FiTrendingUp, FiTrendingDown, FiMinusCircle } from 'react-icons/fi';

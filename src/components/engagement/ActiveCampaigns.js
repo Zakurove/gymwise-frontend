@@ -1,16 +1,10 @@
 import React from 'react';
-import { Box, Heading, Table, Thead, Tbody, Tr, Th, Td, Badge, Button, useColorModeValue, Text, Flex, Icon } from '@chakra-ui/react';
+import { Box, Heading, Table, Thead, Tbody, Tr, Th, Td, Badge, Button, useColorModeValue, Text, Flex, Icon, Progress, VStack} from '@chakra-ui/react';
 import { FiEye, FiEdit2, FiPauseCircle, FiPlayCircle } from 'react-icons/fi';
 
-const ActiveCampaigns = () => {
+const ActiveCampaigns = ({ campaigns }) => {
   const bgColor = useColorModeValue('white', 'gray.700');
   const borderColor = useColorModeValue('gray.100', 'gray.600');
-
-  const campaigns = [
-    { name: 'Welcome Back', segment: 'Fluctuating', type: 'Email', status: 'Active', performance: '15% open rate' },
-    { name: 'Summer Challenge', segment: 'All', type: 'Push', status: 'Scheduled', performance: 'Starts in 2 days' },
-    { name: 'Retention Boost', segment: 'Declining', type: 'SMS', status: 'Active', performance: '10% response rate' },
-  ];
 
   return (
     <Box bg={bgColor} p={6} borderRadius="xl" borderWidth={1} borderColor={borderColor} boxShadow="xl">
@@ -34,14 +28,23 @@ const ActiveCampaigns = () => {
             {campaigns.map((campaign, index) => (
               <Tr key={index}>
                 <Td fontWeight="medium">{campaign.name}</Td>
-                <Td>{campaign.segment}</Td>
-                <Td>{campaign.type}</Td>
+                <Td>{campaign.target_segment}</Td>
+                <Td>{campaign.campaign_type}</Td>
                 <Td>
                   <Badge colorScheme={campaign.status === 'Active' ? 'green' : 'yellow'} borderRadius="full" px={2}>
                     {campaign.status}
                   </Badge>
                 </Td>
-                <Td>{campaign.performance}</Td>
+                <Td>
+                  <VStack align="start" spacing={1}>
+                    <Text fontSize="sm">Open Rate: {(campaign.avg_open_rate * 100).toFixed(2)}%</Text>
+                    <Progress value={campaign.avg_open_rate * 100} size="sm" colorScheme="green" width="100%" />
+                    <Text fontSize="sm">Click Rate: {(campaign.avg_click_rate * 100).toFixed(2)}%</Text>
+                    <Progress value={campaign.avg_click_rate * 100} size="sm" colorScheme="blue" width="100%" />
+                    <Text fontSize="sm">Conversion: {(campaign.avg_conversion_rate * 100).toFixed(2)}%</Text>
+                    <Progress value={campaign.avg_conversion_rate * 100} size="sm" colorScheme="purple" width="100%" />
+                  </VStack>
+                </Td>
                 <Td>
                   <Flex gap={2}>
                     <Button size="sm" variant="ghost" colorScheme="blue"><Icon as={FiEye} /></Button>

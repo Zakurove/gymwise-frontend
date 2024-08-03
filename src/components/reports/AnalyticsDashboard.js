@@ -1,3 +1,5 @@
+// src/components/reports/AnalyticsDashboard.js
+
 import React from 'react';
 import { Box, Heading, SimpleGrid, Stat, StatLabel, StatNumber, StatHelpText, StatArrow, Icon, Flex, useColorModeValue } from '@chakra-ui/react';
 import { FiDollarSign, FiUsers, FiPercent, FiStar } from 'react-icons/fi';

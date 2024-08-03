@@ -1,20 +1,21 @@
+// src/pages/admin/panel.js
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../context/AuthContext';
 import AdminPanel from '../../components/admin/AdminPanel';
-import { Box, Spinner } from '@chakra-ui/react';
+import { Box, Heading, Spinner, Text } from '@chakra-ui/react';
+import { useAuthCheck } from '../../hooks/useAuthCheck';
 
 const AdminPanelPage = () => {
-  const { user, loading } = useAuth();
   const router = useRouter();
+  const { isAuthorized, authChecked, loading } = useAuthCheck();
 
   useEffect(() => {
-    if (!loading && (!user || (user.role !== 'admin' && user.role !== 'superadmin'))) {
+    if (authChecked && !isAuthorized) {
       router.push('/dashboard');
     }
-  }, [user, loading, router]);
+  }, [authChecked, isAuthorized, router]);
 
-  if (loading) {
+  if (loading || !authChecked) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Spinner size="xl" />
@@ -22,8 +23,13 @@ const AdminPanelPage = () => {
     );
   }
 
-  if (!user || (user.role !== 'admin' && user.role !== 'superadmin')) {
-    return null;
+  if (!isAuthorized) {
+    return (
+      <Box textAlign="center" mt={10}>
+        <Heading size="lg" color="red.500">Unauthorized Access</Heading>
+        <Text mt={4}>You do not have permission to view this page.</Text>
+      </Box>
+    );
   }
 
   return <AdminPanel />;

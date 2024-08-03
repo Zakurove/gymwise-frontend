@@ -1,10 +1,13 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Box, Heading, Text, Flex, VStack, useColorModeValue, Tabs, TabList, TabPanels, Tab, TabPanel, Icon } from '@chakra-ui/react';
 import { FiFileText, FiList } from 'react-icons/fi';
 import ReportBuilder from '../components/reports/ReportBuilder';
 import ReportList from '../components/reports/ReportList';
+import AnalyticsDashboard from '../components/reports/AnalyticsDashboard';
 
 const Reports = () => {
+  const { user } = useSelector(state => state.auth);
   const bgColor = useColorModeValue('gray.50', 'gray.800');
 
   return (
@@ -12,12 +15,14 @@ const Reports = () => {
       <VStack spacing={8} align="stretch">
         <Flex justifyContent="space-between" alignItems="flex-start">
           <Box>
-            <Heading size="xl" mb={2} color="brand.500">Reports</Heading>
+            <Heading size="xl" mb={2} color="brand.500">Reports & Analytics</Heading>
             <Text fontSize="lg" color={useColorModeValue('gray.600', 'gray.400')}>
-              Generate custom reports and gain deeper insights into your gym's performance.
+              Generate custom reports and gain deeper insights into {user.institution_name}'s performance.
             </Text>
           </Box>
         </Flex>
+
+        <AnalyticsDashboard />
 
         <Tabs colorScheme="brand" variant="soft-rounded" size="lg">
           <TabList>

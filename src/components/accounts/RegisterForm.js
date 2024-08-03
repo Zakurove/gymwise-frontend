@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from 'react-redux';
 import { 
   Box, 
   Button, 
@@ -10,43 +11,29 @@ import {
   Text, 
   Heading, 
   useColorModeValue, 
-  useToast, 
   Link as ChakraLink
 } from "@chakra-ui/react";
-import axios from "axios";
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import { motion } from "framer-motion";
 import PasswordRequirements from "./PasswordRequirements";
+import { registerUser } from "../../redux/auth/authActions";
 
 const RegisterForm = () => {
   const { register, handleSubmit, formState: { errors }, watch } = useForm();
-  const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector(state => state.auth);
+  const router = useRouter();
   const bgColor = useColorModeValue("white", "gray.800");
 
   const password = watch("password", "");
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
     try {
-      const response = await axios.post("http://localhost:8000/api/register/", data);
-      toast({
-        title: "Registration successful",
-        description: "Please check your email to activate your account.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      await dispatch(registerUser(data));
+      router.push('/registration-success');
     } catch (error) {
-      toast({
-        title: "Registration failed",
-        description: error.response?.data?.detail || "Please try again.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setIsLoading(false);
+      // Error handling is done in the reducer
     }
   };
 
@@ -110,18 +97,19 @@ const RegisterForm = () => {
                 type="submit" 
                 colorScheme="blue" 
                 width="full" 
-                isLoading={isLoading}
+                isLoading={loading}
                 isDisabled={Object.keys(errors).length > 0}
               >
                 Register
               </Button>
             </VStack>
           </form>
+          {error && <Text color="red.500">{error}</Text>}
           <Text>
             Already have an account?{" "}
             <NextLink href="/login" passHref legacyBehavior>
-            <ChakraLink color="blue.500">Login here</ChakraLink>
-          </NextLink>
+              <ChakraLink color="blue.500">Login here</ChakraLink>
+            </NextLink>
           </Text>
         </VStack>
       </Box>

@@ -1,4 +1,6 @@
+// src/components/admin/AdminPanel.js
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Box,
   Heading,
@@ -10,42 +12,41 @@ import {
   Td,
   Button,
   useToast,
+  Select,
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Icon,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Text,
+  Spinner,
 } from '@chakra-ui/react';
-import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
+import { SearchIcon } from '@chakra-ui/icons';
+import { fetchUsers, activateUser, changeUserRole } from '../../redux/admin/adminActions';
 
 const AdminPanel = () => {
-  const [pendingUsers, setPendingUsers] = useState([]);
-  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const { users, loading, error } = useSelector(state => state.admin);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
-    fetchPendingUsers();
-  }, []);
+    const loadData = async () => {
+      await dispatch(fetchUsers());
+      setIsDataLoaded(true);
+    };
+    loadData();
+  }, [dispatch]);
 
-  const fetchPendingUsers = async () => {
+  const handleActivateUser = async (userId) => {
     try {
-      const response = await axios.get('http://localhost:8000/api/pending-users/', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      setPendingUsers(response.data);
-    } catch (error) {
-      console.error('Error fetching pending users:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch pending users',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const activateUser = async (userId) => {
-    try {
-      await axios.post(`http://localhost:8000/api/activate-user/${userId}/`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await dispatch(activateUser(userId));
       toast({
         title: 'Success',
         description: 'User activated successfully',
@@ -53,9 +54,7 @@ const AdminPanel = () => {
         duration: 3000,
         isClosable: true,
       });
-      fetchPendingUsers();
     } catch (error) {
-      console.error('Error activating user:', error);
       toast({
         title: 'Error',
         description: 'Failed to activate user',
@@ -66,35 +65,127 @@ const AdminPanel = () => {
     }
   };
 
+  const handleChangeUserRole = async (userId, newRole) => {
+    try {
+      await dispatch(changeUserRole(userId, newRole));
+      toast({
+        title: 'Success',
+        description: 'User role updated successfully',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to change user role',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const filteredUsers = users.filter(user => 
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const activeUsers = filteredUsers.filter(user => user.is_active);
+  const inactiveUsers = filteredUsers.filter(user => !user.is_active);
+
+  const UserTable = ({ users, showActivateButton }) => (
+    <Table variant="simple">
+      <Thead>
+        <Tr>
+          <Th>Name</Th>
+          <Th>Email</Th>
+          <Th>Role</Th>
+          <Th>Action</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {users.map((user) => (
+          <Tr key={user.id}>
+            <Td>{`${user.first_name} ${user.last_name}`}</Td>
+            <Td>{user.email}</Td>
+            <Td>{user.role}</Td>
+            <Td>
+              <HStack spacing={2}>
+                {showActivateButton && (
+                  <Button
+                    colorScheme="green"
+                    size="sm"
+                    onClick={() => handleActivateUser(user.id)}
+                  >
+                    Activate
+                  </Button>
+                )}
+                <Select
+                  size="sm"
+                  value={user.role}
+                  onChange={(e) => handleChangeUserRole(user.id, e.target.value)}
+                  isDisabled={user.role === 'superadmin'}
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                  {user.role === 'superadmin' && (
+                    <option value="superadmin">Superadmin</option>
+                  )}
+                </Select>
+              </HStack>
+            </Td>
+          </Tr>
+        ))}
+      </Tbody>
+    </Table>
+  );
+
+  if (loading || !isDataLoaded) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
+        <Spinner size="xl" />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box textAlign="center" mt={10}>
+        <Heading size="lg" color="red.500">Error loading admin panel</Heading>
+        <Text mt={4}>{error}</Text>
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Heading mb={6}>Admin Panel</Heading>
-      <Heading size="md" mb={4}>Pending Users</Heading>
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>Name</Th>
-            <Th>Email</Th>
-            <Th>Action</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {pendingUsers.map((pendingUser) => (
-            <Tr key={pendingUser.id}>
-              <Td>{`${pendingUser.first_name} ${pendingUser.last_name}`}</Td>
-              <Td>{pendingUser.email}</Td>
-              <Td>
-                <Button
-                  colorScheme="green"
-                  onClick={() => activateUser(pendingUser.id)}
-                >
-                  Activate
-                </Button>
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
+      <InputGroup mb={4}>
+        <InputLeftElement pointerEvents="none">
+          <Icon as={SearchIcon} color="gray.300" />
+        </InputLeftElement>
+        <Input
+          type="text"
+          placeholder="Search users..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </InputGroup>
+      <Tabs>
+        <TabList>
+          <Tab>Active Users ({activeUsers.length})</Tab>
+          <Tab>Inactive Users ({inactiveUsers.length})</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <UserTable users={activeUsers} showActivateButton={false} />
+          </TabPanel>
+          <TabPanel>
+            <UserTable users={inactiveUsers} showActivateButton={true} />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 };

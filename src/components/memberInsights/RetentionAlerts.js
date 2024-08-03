@@ -1,3 +1,5 @@
+// src/components/memberInsights/RetentionAlerts.js
+
 import React from 'react';
 import { Box, Heading, VStack, HStack, Text, Icon, Badge, Button, useColorModeValue } from '@chakra-ui/react';
 import { FiAlertCircle, FiCheckCircle, FiClock, FiArrowRight } from 'react-icons/fi';
@@ -28,7 +30,7 @@ const RetentionAlerts = () => {
               bg: alert.urgent ? 'rgba(254, 178, 178, 0.1)' : 'rgba(154, 230, 180, 0.1)'
             }}
             transition="all 0.3s"
-            _hover={{ transform: 'translateY(-2px)', boxShadow: 'md' }}
+            _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
           >
             <HStack spacing={4} justify="space-between" align="center">
               <HStack spacing={4}>

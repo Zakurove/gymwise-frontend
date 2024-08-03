@@ -1,24 +1,43 @@
 import React from 'react';
-import { Box, Heading, Flex, Text, HStack, VStack, Icon, useColorModeValue } from '@chakra-ui/react';
+import { useSelector } from 'react-redux';
+import { Box, Heading, Flex, Text, HStack, VStack, Icon, useColorModeValue, Spinner } from '@chakra-ui/react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { FiTrendingUp, FiDollarSign } from 'react-icons/fi';
 
 const RevenueChart = () => {
+  const { revenueData, loading, error } = useSelector(state => state.revenue);
   const bgColor = useColorModeValue('white', 'gray.700');
   const borderColor = useColorModeValue('gray.100', 'gray.600');
   const textColor = useColorModeValue('gray.600', 'gray.200');
 
-  const data = [
-    { month: 'Jan', revenue: 4000, lastYear: 3500 },
-    { month: 'Feb', revenue: 3000, lastYear: 2800 },
-    { month: 'Mar', revenue: 5000, lastYear: 4200 },
-    { month: 'Apr', revenue: 4500, lastYear: 3900 },
-    { month: 'May', revenue: 6000, lastYear: 5100 },
-    { month: 'Jun', revenue: 5500, lastYear: 4800 },
-  ];
+  if (loading) {
+    return (
+      <Box bg={bgColor} p={6} borderRadius="lg" borderWidth={1} borderColor={borderColor} boxShadow="xl">
+        <Flex justify="center" align="center" height="300px">
+          <Spinner size="xl" />
+        </Flex>
+      </Box>
+    );
+  }
 
-  const currentYearTotal = data.reduce((sum, item) => sum + item.revenue, 0);
-  const lastYearTotal = data.reduce((sum, item) => sum + item.lastYear, 0);
+  if (error) {
+    return (
+      <Box bg={bgColor} p={6} borderRadius="lg" borderWidth={1} borderColor={borderColor} boxShadow="xl">
+        <Text color="red.500">Error loading revenue data: {error}</Text>
+      </Box>
+    );
+  }
+
+  if (!revenueData || revenueData.length === 0) {
+    return (
+      <Box bg={bgColor} p={6} borderRadius="lg" borderWidth={1} borderColor={borderColor} boxShadow="xl">
+        <Text>No revenue data available.</Text>
+      </Box>
+    );
+  }
+
+  const currentYearTotal = revenueData.reduce((sum, item) => sum + item.revenue, 0);
+  const lastYearTotal = revenueData.reduce((sum, item) => sum + item.lastYear, 0);
   const growthRate = ((currentYearTotal - lastYearTotal) / lastYearTotal * 100).toFixed(1);
 
   return (
@@ -36,7 +55,7 @@ const RevenueChart = () => {
         </HStack>
       </Flex>
       <ResponsiveContainer width="100%" height={300}>
-        <AreaChart data={data}>
+        <AreaChart data={revenueData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
           <YAxis />
