@@ -17,7 +17,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { FaHome, FaChartLine, FaUsers, FaCog, FaBullhorn, FaFileAlt, FaDatabase } from "react-icons/fa";
+import { FaHome, FaChartLine, FaUsers, FaCog, FaBullhorn, FaFileAlt, FaDatabase, FaUserFriends } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const router = useRouter();
@@ -81,7 +81,8 @@ const Sidebar = ({ isOpen, onClose }) => {
   const SidebarContent = (
     <VStack align="stretch" spacing={1}>
       <NavLink icon={FaHome} href="/dashboard">Dashboard & Revenue</NavLink>
-      <NavLink icon={FaUsers} href="/member-insights">Member Insights & Retention</NavLink>
+      {/* <NavLink icon={FaUsers} href="/member-insights">Member Insights & Retention</NavLink> */}
+      <NavLink icon={FaUserFriends} href="/members">Member Management</NavLink>
       <NavLink icon={FaBullhorn} href="/engagement">Engagement Orchestrator</NavLink>
       <NavLink icon={FaFileAlt} href="/reports">Reports & Analytics</NavLink>
       <NavLink icon={FaDatabase} href="/data-management">Data Management</NavLink>

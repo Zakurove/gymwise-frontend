@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, Heading, VStack, useColorModeValue } from '@chakra-ui/react';
 import MemberListView from '../../components/members/MemberListView';
-import { useSelector } from 'react-redux';
+import { useAuthCheck } from '../../hooks/useAuthCheck';
 
 const MembersPage = () => {
-  const { user } = useSelector(state => state.auth);
+  const { user } = useAuthCheck();
   const bgColor = useColorModeValue('gray.50', 'gray.800');
 
   return (

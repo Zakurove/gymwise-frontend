@@ -1,115 +1,85 @@
-import React, { useState } from 'react';
+// src/components/data-management/DataUploadForm.js
+
+import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import {
   Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
   VStack,
   Text,
-  Progress,
   useColorModeValue,
-  useToast,
-  Heading
+  Alert,
+  AlertIcon,
+  FormControl,
+  FormLabel,
+  Icon,
+  Center,
 } from '@chakra-ui/react';
-import { FiUpload } from 'react-icons/fi';
-import axios from 'axios';
+import { FiUploadCloud } from 'react-icons/fi';
+import { useDropzone } from 'react-dropzone';
 
-const DataUploadForm = () => {
-  const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [errors, setErrors] = useState([]);
-  const { user } = useSelector(state => state.auth);
-  const toast = useToast();
-
+const DataUploadForm = ({ onFileUpload }) => {
+  const { loading, error } = useSelector(state => state.members);
   const bgColor = useColorModeValue('white', 'gray.700');
+  const borderColor = useColorModeValue('gray.200', 'gray.600');
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-    setErrors([]);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!file) {
-      setErrors(['Please select a file to upload']);
-      return;
+  const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles.length > 0) {
+      onFileUpload(acceptedFiles[0]);
     }
+  }, [onFileUpload]);
 
-    setUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const response = await axios.post('/api/upload-data', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setUploadProgress(percentCompleted);
-        },
-      });
-
-      toast({
-        title: 'Upload Successful',
-        description: 'Your data has been uploaded and is being processed.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
-
-      // Reset form
-      setFile(null);
-      setUploadProgress(0);
-    } catch (error) {
-      console.error('Upload failed:', error);
-      setErrors(['Upload failed. Please try again.']);
-      toast({
-        title: 'Upload Failed',
-        description: 'There was an error uploading your data. Please try again.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
+  const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
+    onDrop,
+    accept: '.csv',
+    multiple: false,
+  });
 
   return (
-    <Box bg={bgColor} p={6} borderRadius="lg" boxShadow="md">
-      <form onSubmit={handleSubmit}>
-        <VStack spacing={4} align="stretch">
-          <Heading size="md">Upload Member Data</Heading>
-          <Text>Upload CSV file containing member data for {user?.institution?.name}</Text>
-          <FormControl>
-            <FormLabel>Select CSV File</FormLabel>
-            <Input type="file" accept=".csv" onChange={handleFileChange} />
-          </FormControl>
-          {errors.length > 0 && (
-            <Box color="red.500">
-              {errors.map((error, index) => (
-                <Text key={index}>{error}</Text>
-              ))}
-            </Box>
-          )}
-          {uploading && (
-            <Progress value={uploadProgress} size="sm" colorScheme="blue" />
-          )}
-          <Button
-            leftIcon={<FiUpload />}
-            colorScheme="blue"
-            type="submit"
-            isLoading={uploading}
-            loadingText="Uploading..."
+    <Box bg={bgColor} p={6} borderRadius="md" borderWidth={1} borderColor={borderColor} boxShadow="md">
+      <VStack spacing={6} align="stretch">
+        <FormControl>
+          <FormLabel>Select CSV File</FormLabel>
+          <Center 
+            {...getRootProps()}
+            h="200px" 
+            border="2px dashed" 
+            borderColor={isDragActive ? "brand.500" : "gray.300"}
+            borderRadius="md"
+            cursor="pointer"
+            _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}
           >
-            Upload Data
-          </Button>
-        </VStack>
-      </form>
+            <input {...getInputProps()} />
+            <VStack spacing={2}>
+              <Icon as={FiUploadCloud} w={10} h={10} color={isDragActive ? "brand.500" : "gray.500"} />
+              <Text fontWeight="medium" textAlign="center">
+                {acceptedFiles.length > 0
+                  ? `Selected file: ${acceptedFiles[0].name}`
+                  : isDragActive
+                    ? "Drop the CSV file here"
+                    : "Drag and drop your CSV file here, or click to select"
+                }
+              </Text>
+              <Text fontSize="sm" color="gray.500">
+                (Only .csv files are accepted)
+              </Text>
+            </VStack>
+          </Center>
+        </FormControl>
+        
+        {error && (
+          <Alert status="error">
+            <AlertIcon />
+            <Text>{error}</Text>
+          </Alert>
+        )}
+        
+        {loading && (
+          <Alert status="info">
+            <AlertIcon />
+            <Text>Analyzing your file, please wait...</Text>
+          </Alert>
+        )}
+      </VStack>
     </Box>
   );
 };

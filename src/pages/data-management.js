@@ -1,11 +1,11 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Box, Heading, Text, VStack, useColorModeValue } from '@chakra-ui/react';
-import DataUploadForm from '../components/data-management/DataUploadForm';
+import DataUploadWizard from '../components/data-management/DataUploadWizard';
 import DataStatusOverview from '../components/data-management/DataStatusOverview';
+import { useAuthCheck } from '../hooks/useAuthCheck';
 
 const DataManagement = () => {
-  const { user } = useSelector(state => state.auth);
+  const { user } = useAuthCheck();
   const bgColor = useColorModeValue('gray.50', 'gray.800');
 
   return (
@@ -14,11 +14,11 @@ const DataManagement = () => {
         <Box>
           <Heading size="xl" mb={2} color="brand.500">Data Management</Heading>
           <Text fontSize="lg" color={useColorModeValue('gray.600', 'gray.400')}>
-            Upload and manage {user.institution_name}'s member data to power AI insights.
+            Upload and manage {user?.institution?.name}'s member data to power AI insights.
           </Text>
         </Box>
 
-        <DataUploadForm />
+        <DataUploadWizard />
         <DataStatusOverview />
       </VStack>
     </Box>
